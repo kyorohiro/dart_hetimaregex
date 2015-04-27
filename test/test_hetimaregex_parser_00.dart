@@ -1,4 +1,4 @@
-library dart_hetimaparser_test;
+library dart_hetimaparser_test_parser;
 
 import 'package:hetimaregex/hetimaregex.dart' as regex;
 import 'package:unittest/unittest.dart';
@@ -14,14 +14,10 @@ void script00() {
 
     test('char true', () {
       regex.RegexParser parser = new regex.RegexParser();
-
-      regex.RegexVM vm = new regex.RegexVM.createFromCommand([
-        new regex.CharCommand.createFromList(conv.UTF8.encode("aa")),
-        new regex.MatchCommand(),
-      ]);
-
-      return vm.match(conv.UTF8.encode("aa")).then((List<List<int>> v) {
-        expect(true, true);
+      parser.compile("aa").then((regex.RegexVM vm) {
+        return vm.match(conv.UTF8.encode("aabb")).then((List<List<int>> v){
+          expect(true, true);          
+        });
       }).catchError((e) {
         expect(true, false);
       });

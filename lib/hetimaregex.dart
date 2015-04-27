@@ -8,3 +8,4 @@ part 'src/vm/regexvm.dart';
 part 'src/vm/regextask.dart';
 part 'src/vm/regexcommand.dart';
 part 'src/parser/regexparser.dart';
+part 'src/parser/regexlexer.dart';

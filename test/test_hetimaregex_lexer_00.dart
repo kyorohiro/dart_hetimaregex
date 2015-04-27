@@ -1,4 +1,4 @@
-library dart_hetimaparser_test;
+library dart_hetimaparser_test_lexer;
 
 import 'package:hetimaregex/hetimaregex.dart' as regex;
 import 'package:unittest/unittest.dart';
