@@ -3,10 +3,12 @@
 
 library dart_hetimaregex.test;
 
-import 'test_hetimaregex_00.dart' as hetimaregex_00;
+import 'test_hetimaregex_vm_00.dart' as hetimaregex_vm_00;
+import 'test_hetimaregex_parser_00.dart' as hetimaregex_parser_00;
+import 'test_hetimaregex_lexer_00.dart' as hetimaregex_lexer_00;
 
 void main() {
- // dart_hetimagl_test.defineTests();
- // hetimascript_00.script00();
-  hetimaregex_00.script00();
+  hetimaregex_vm_00.script00();
+//  hetimaregex_parser_00.script00();
+  hetimaregex_lexer_00.script00();
 }

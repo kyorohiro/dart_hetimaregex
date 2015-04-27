@@ -36,9 +36,7 @@ class RegexVM {
 
   async.Future<List<List<int>>> match(List<int> text) {
     async.Completer completer = new async.Completer();
-    List<List<int>> ret = [];
-    heti.EasyParser parser =
-        new heti.EasyParser(new heti.ArrayBuilder.fromList(text, true));
+    heti.EasyParser parser = new heti.EasyParser(new heti.ArrayBuilder.fromList(text, true));
     _tasks.add(new RegexTask.fromCommnadPos(0, parser));
 
     loop() {
