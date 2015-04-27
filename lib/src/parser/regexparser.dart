@@ -29,6 +29,12 @@ class RegexParser {
           case RegexToken.character:
             vm.addCommand(new CharCommand.createFromList([t.value]));
             break;
+          case RegexToken.lparan:
+            vm.addCommand(new MemoryStartCommand());
+            break;
+          case RegexToken.rparen:
+            vm.addCommand(new MemoryStopCommand());
+            break;
         }
       }
       vm.addCommand(new MatchCommand());
