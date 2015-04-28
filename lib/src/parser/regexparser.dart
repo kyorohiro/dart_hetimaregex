@@ -48,6 +48,7 @@ class RegexParser {
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens){
       List<Command> ret = [];
       List<SignS> stackMemoryStartStop = [];
+      List<Command> cashMemoryStartStop = [];
       int id = 0;
 
       for(RegexToken t in tokens) {
@@ -60,25 +61,48 @@ class RegexParser {
             SignS s = new SignS(id++);
             ret.add(s);
             stackMemoryStartStop.add(s);
+            cashMemoryStartStop.add(s);
             break;
           case RegexToken.rparen:
             ret.add(new MemoryStopCommand());
-            ret.add(new SignE(stackMemoryStartStop.last));
+            SignE e = new SignE(stackMemoryStartStop.last);
+            ret.add(e);
+            cashMemoryStartStop.add(e);
             stackMemoryStartStop.removeLast();
             break;
           case RegexToken.star:
             if(ret.last is SignE) {
               int a1 = ret.length;
               int index = ret.indexOf((ret.last as SignE).s);
-              ret.insert(index, new SplitTaskCommand.create(1, a1-index));              
+              ret.insert(index, new SplitTaskCommand.create(1, a1-index));  
+              ret.add(new JumpTaskCommand.create(-1*(a1-index)));
             } else {
-              ret.insert(ret.length-2, new SplitTaskCommand.create(1, 2));
+              ret.insert(ret.length-1, new SplitTaskCommand.create(1, 3));
+              ret.add(new JumpTaskCommand.create(-2));
+            }
+            break;
+          case RegexToken.union:
+            if(stackMemoryStartStop.length == 0) {
+              int a1 = ret.length;
+              ret.insert(0, new SplitTaskCommand.create(1, a1));
+            } else {
+              int a1 = ret.length;
+              int index = ret.indexOf((ret.last as SignE).s);
+              ret.insert(index, new SplitTaskCommand.create(1, a1-index));  
             }
             break;
         }
       }
-      RegexVM vm = new RegexVM.createFromCommand([]);
-      vm.addCommand(new MatchCommand());
+
+      ret.add(new MatchCommand());
+      for(Command c in cashMemoryStartStop) {
+        ret.remove(c);
+      }
+      for(Command c in ret) {
+        print("${c.toString()}\n");
+      }
+      RegexVM vm = new RegexVM.createFromCommand(ret);
+
       completer.complete(vm);
     }).catchError((e){
       completer.completeError(e);

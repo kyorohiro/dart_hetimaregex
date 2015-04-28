@@ -16,6 +16,10 @@ class MemoryStartCommand extends Command {
     c.complete([]);
     return c.future;
   }
+
+  String toString() {
+    return "<memory start>";
+  }
 }
 
 class MemoryStopCommand extends Command {
@@ -27,7 +31,13 @@ class MemoryStopCommand extends Command {
     c.complete([]);
     return c.future;
   }
+
+  String toString() {
+    return "<memory stop>";
+  }
+
 }
+
 
 class MatchCommandNotification extends Error {
   MatchCommandNotification(dynamic mes) {}
@@ -38,6 +48,9 @@ class MatchCommand extends Command {
     async.Completer<List<int>> c = new async.Completer();
     c.completeError(new MatchCommandNotification(""));
     return c.future;
+  }
+  String toString() {
+    return "<match>";
   }
 }
 
@@ -65,6 +78,10 @@ class JumpTaskCommand extends Command {
     c.complete([]);
     return c.future;
   }
+  
+  String toString() {
+    return "<jump ${_pos1}>";
+  }
 }
 
 class SplitTaskCommand extends Command {
@@ -90,10 +107,15 @@ class SplitTaskCommand extends Command {
 
     int currentPos = currentTask._commandPos;
     currentTask._commandPos = currentPos + _pos1;
-    vm.addTask(new RegexTask.fromCommnadPos(currentPos + _pos2, parser));
+//  vm.addTask(new RegexTask.fromCommnadPos(currentPos + _pos2, parser));
+  vm.addTask(new RegexTask.clone(currentTask, currentPos + _pos2));
 
     c.complete([]);
     return c.future;
+  }
+
+  String toString() {
+    return "<split ${_pos1} ${_pos2}>";
   }
 }
 
@@ -128,5 +150,9 @@ class CharCommand extends Command {
       c.complete(v);
     });
     return c.future;
+  }
+
+  String toString() {
+    return "<char ${_expect}>";
   }
 }

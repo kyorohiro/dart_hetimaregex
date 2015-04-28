@@ -9,6 +9,18 @@ class RegexTask {
   List<int> _memoryWritable = [];
   int _nextMemoryId = 0;
 
+  RegexTask.clone(RegexTask tasl, [int commandPos = -1]) {
+    if(commandPos != -1) {
+      this._commandPos = commandPos;
+    } else {
+      this._commandPos = tasl._commandPos;      
+    }
+    this._parser = tasl._parser.toClone();
+    this._memory = new List.from(tasl._memory);
+    this._memoryWritable = new List.from(tasl._memoryWritable);
+    this._nextMemoryId = tasl._nextMemoryId;
+  }
+
   RegexTask.fromCommnadPos(int commandPos, heti.EasyParser parser) {
     _commandPos = commandPos;
     _parser = parser.toClone();

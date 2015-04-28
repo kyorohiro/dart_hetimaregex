@@ -190,6 +190,30 @@ void script00() {
         expect(true, false);
       });
     });
+    //
+    // <memory start>
+    // <split 1 3>
+    // <char [97]>
+    // <jump -2>
+    // <memory stop>
+    // <match>
+    test('char memory true ff', () {
+      regex.RegexVM vm = new regex.RegexVM.createFromCommand([
+        new regex.MemoryStartCommand(),
+        new regex.SplitTaskCommand.create(1, 3),
+        new regex.CharCommand.createFromList(conv.UTF8.encode("a")),
+        new regex.JumpTaskCommand.create(-2),
+        new regex.MemoryStopCommand(),
+        new regex.MatchCommand(),
+      ]);
+
+      return vm.match(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
+        expect(true, true);
+        expect(conv.UTF8.decode(v[0]), "aa");
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
   });
 }
 
