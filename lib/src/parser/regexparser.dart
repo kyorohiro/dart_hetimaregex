@@ -19,24 +19,30 @@ class RegexToken {
 
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
-    RegexVM vm = new RegexVM.createFromCommand([]);
+
 
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
+
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens){
+      List<Command> ret = [];
       for(RegexToken t in tokens) {
         switch(t.kind) {
           case RegexToken.character:
-            vm.addCommand(new CharCommand.createFromList([t.value]));
+            ret.add(new CharCommand.createFromList([t.value]));
             break;
           case RegexToken.lparan:
-            vm.addCommand(new MemoryStartCommand());
+            ret.add(new MemoryStartCommand());
             break;
           case RegexToken.rparen:
-            vm.addCommand(new MemoryStopCommand());
+            ret.add(new MemoryStopCommand());
+            break;
+          case RegexToken.star:
+            ret.insert(ret.length-2, new SplitTaskCommand.create(1, 2));
             break;
         }
       }
+      RegexVM vm = new RegexVM.createFromCommand([]);
       vm.addCommand(new MatchCommand());
       completer.complete(vm);
     }).catchError((e){
