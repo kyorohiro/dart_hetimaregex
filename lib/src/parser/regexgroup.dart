@@ -2,20 +2,35 @@ part of hetimaregex;
 
 
 class RegexGroup {
-  List<List<Object>> commandList = [[]];
-  List<Object> get command => commandList[commandList.length - 1];
+
+  List<List<Object>> elementsPerOrgroup = [[]];
+  List<Object> get elements => elementsPerOrgroup[elementsPerOrgroup.length - 1];
   bool isRoot = false;
-  List<RegexCommand> serialize() {
+
+  List<RegexCommand> convertRegexCommands() {
     List<RegexCommand> ret = [];
-    List<List<RegexCommand>> tmp = [];
-    for (int i = 0; i < commandList.length; i++) {
-      tmp.add(serializePart(i));
+    List<List<RegexCommand>> commandPerOrgroup = [];
+
+    for (int i = 0; i < elementsPerOrgroup.length; i++) {
+      commandPerOrgroup.add(_toRegexCommandPerGroup(i));
     }
 
     if (!isRoot) {
       ret.add(new MemoryStartCommand());
     }
-    if (commandList.length == 1) {
+
+    ret.addAll(_combineRegexCommand(commandPerOrgroup));
+
+    if (!isRoot) {
+      ret.add(new MemoryStopCommand());
+    }
+    return ret;
+  }
+
+  List<RegexCommand> _combineRegexCommand(List<List<RegexCommand>> tmp) {
+    List<RegexCommand> ret = [];
+
+    if (elementsPerOrgroup.length == 1) {
       ret.addAll(tmp[0]);
     } else {
       int commandLength = (tmp.length - 1) * 2 + 1;
@@ -40,19 +55,16 @@ class RegexGroup {
         }
       }
     }
-    if (!isRoot) {
-      ret.add(new MemoryStopCommand());
-    }
     return ret;
   }
-  List<RegexCommand> serializePart(int index) {
+  List<RegexCommand> _toRegexCommandPerGroup(int index) {
     List<RegexCommand> ret = [];
     List<Object> stack = [];
-    stack.insertAll(0, commandList[index]);
+    stack.insertAll(0, elementsPerOrgroup[index]);
     while (stack.length > 0) {
       Object current = stack.removeAt(0);
       if (current is RegexGroup) {
-        stack.insertAll(0, (current as RegexGroup).serialize());
+        stack.insertAll(0, (current as RegexGroup)._combineRegexCommand());
       } else {
         ret.add(current);
       }
