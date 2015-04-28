@@ -64,7 +64,7 @@ class RegexGroup {
     while (stack.length > 0) {
       Object current = stack.removeAt(0);
       if (current is RegexGroup) {
-        stack.insertAll(0, (current as RegexGroup)._combineRegexCommand());
+        stack.insertAll(0, (current as RegexGroup).convertRegexCommands());
       } else {
         ret.add(current);
       }

@@ -27,8 +27,8 @@ class RegexParser {
           case RegexToken.star:
             if (stack.last.elements.last is RegexGroup) {
               RegexGroup p = stack.last.elements.last;
-              stack.last.elements.insert(stack.last.elements.length - 1, new SplitTaskCommand.create(1, p._combineRegexCommand().length + 2));
-              stack.last.elements.add(new JumpTaskCommand.create(-1 * (p._combineRegexCommand().length + 1)));
+              stack.last.elements.insert(stack.last.elements.length - 1, new SplitTaskCommand.create(1, p.convertRegexCommands().length + 2));
+              stack.last.elements.add(new JumpTaskCommand.create(-1 * (p.convertRegexCommands().length + 1)));
             } else {
               stack.last.elements.insert(stack.last.elements.length - 1, new SplitTaskCommand.create(1, 3));
               stack.last.elements.add(new JumpTaskCommand.create(-2));
@@ -42,7 +42,7 @@ class RegexParser {
         }
       }
       List<RegexCommand> ret = [];
-      ret.addAll(root._combineRegexCommand());
+      ret.addAll(root.convertRegexCommands());
       ret.add(new MatchCommand());
       RegexVM vm = new RegexVM.createFromCommand(ret);
 
