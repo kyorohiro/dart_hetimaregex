@@ -14,7 +14,7 @@ void script00() {
 
     test('char true a', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("aa").then((regex.RegexVM vm) {
+      parser.compile("aa").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("aabb")).then((List<List<int>> v){
           expect(true, true);          
         });
@@ -24,7 +24,7 @@ void script00() {
     });
     test('char true b', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(aa)").then((regex.RegexVM vm) {
+      parser.compile("(aa)").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("aabb")).then((List<List<int>> v){
           //expect(true, true);
           expect(conv.UTF8.decode(v[0]),"aa");
@@ -35,7 +35,7 @@ void script00() {
     });
     test('char true c', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(a*)").then((regex.RegexVM vm) {
+      parser.compile("(a*)").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("aaabb")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"aaa");
         });
@@ -45,7 +45,7 @@ void script00() {
     });
     test('char true c1', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(a*)b").then((regex.RegexVM vm) {
+      parser.compile("(a*)b").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("aaabb")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"aaa");
         });
@@ -56,7 +56,7 @@ void script00() {
 
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(ab)*").then((regex.RegexVM vm) {
+      parser.compile("(ab)*").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("ababc")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"ab");
           expect(conv.UTF8.decode(v[1]),"ab");
@@ -68,7 +68,7 @@ void script00() {
 
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(abc)*d").then((regex.RegexVM vm) {
+      parser.compile("(abc)*d").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("abcabcd")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"abc");
           expect(conv.UTF8.decode(v[1]),"abc");
@@ -79,7 +79,7 @@ void script00() {
     });
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("((abc)*d)").then((regex.RegexVM vm) {
+      parser.compile("((abc)*d)").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("abcabcd")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"abcabcd");
           expect(conv.UTF8.decode(v[1]),"abc");
@@ -91,7 +91,7 @@ void script00() {
     });
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("abc|def").then((regex.RegexVM vm) {
+      parser.compile("abc|def").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("abcabc")).then((List<List<int>> v){
           expect(v.length,0);
         });
@@ -102,7 +102,7 @@ void script00() {
 
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(abc|def)").then((regex.RegexVM vm) {
+      parser.compile("(abc|def)").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("abcabc")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"abc");
         });
@@ -113,7 +113,7 @@ void script00() {
 
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
-      parser.compile2("(abc|def)").then((regex.RegexVM vm) {
+      parser.compile("(abc|def)").then((regex.RegexVM vm) {
         return vm.lookingAt(conv.UTF8.encode("defabc")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"def");
         });

@@ -2,7 +2,7 @@ part of hetimaregex;
 
 
 class RegexParser {
-  async.Future<RegexVM> compile2(String source) {
+  async.Future<RegexVM> compile(String source) {
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
 
@@ -36,7 +36,7 @@ class RegexParser {
             break;
           case RegexToken.union:
             //
-            // '|'は次のパターン決まるまで確定しないので、後でコンパイルする。
+            // '|'は次のパターン決まるまで確定しないので、コマンドの生成は後回し。
             stack.last.commandList.add([]);
             break;
         }
@@ -44,10 +44,6 @@ class RegexParser {
       List<RegexCommand> ret = [];
       ret.addAll(root.serialize());
       ret.add(new MatchCommand());
-      print("--");
-      for (RegexCommand c in ret) {
-        print("${c.toString()}");
-      }
       RegexVM vm = new RegexVM.createFromCommand(ret);
 
       completer.complete(vm);

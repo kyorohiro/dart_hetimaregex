@@ -20,6 +20,14 @@ class RegexVM {
     _tasks.insert(index, task);
   }
 
+  String toString() {
+    String ret = "";
+    for (RegexCommand c in ret) {
+      ret += "${c.toString()}\n";
+    }
+    return ret;
+  }
+
   bool get _haveCurrentTask {
     if (_tasks.length > 0) {
       return true;
