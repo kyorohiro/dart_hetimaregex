@@ -28,11 +28,13 @@ class SignS extends Command {
     return c.future;
   }
 }
+
 class SignE extends Command {
   SignS s = null;
   SignE(SignS s) {
     this.s = s;
   }
+
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer c = new async.Completer();
     c.complete([]);
@@ -44,6 +46,17 @@ class RegexParser {
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
 
+    int _signNumIn(SignE e, List<Command> ret) {
+      int indexE = ret.indexOf(e);
+      int indexS = ret.indexOf(e.s);
+      int r = 0;
+      for(int i= indexS;i<=indexE;i++) {
+        if(ret[i] is SignE || ret[i] is SignS) {
+          r++;
+        }
+      }
+      return r;
+    }
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens) {
       List<Command> ret = [];
       List<SignS> stackMemoryStartStop = [];
@@ -75,7 +88,7 @@ class RegexParser {
             break;
           case RegexToken.star:
             if (ret.last is SignE) {
-              int a1 = ret.length-cashMemoryStartStop.length;
+              int a1 = ret.length-_signNumIn(ret.last, ret);//cashMemoryStartStop.length;
               int index = ret.indexOf((ret.last as SignE).s);
               ret.insert(index, new SplitTaskCommand.create(1, a1 - index+2));
               ret.add(new JumpTaskCommand.create(-1 * (a1 - index+1)));

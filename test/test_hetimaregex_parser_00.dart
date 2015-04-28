@@ -43,12 +43,38 @@ void script00() {
         expect(true, false);
       });
     });
-*/
+
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("(ab)*").then((regex.RegexVM vm) {
         return vm.match(conv.UTF8.encode("ababc")).then((List<List<int>> v){
-          expect(conv.UTF8.decode(v[0]),"abab");
+          expect(conv.UTF8.decode(v[0]),"ab");
+          expect(conv.UTF8.decode(v[1]),"ab");
+        });
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
+     */
+    test('char true d', () {
+      regex.RegexParser parser = new regex.RegexParser();
+      parser.compile("(abc)*d").then((regex.RegexVM vm) {
+        return vm.match(conv.UTF8.encode("abcabcd")).then((List<List<int>> v){
+          expect(conv.UTF8.decode(v[0]),"abc");
+          expect(conv.UTF8.decode(v[1]),"abc");
+        });
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
+  
+    test('char true d', () {
+      regex.RegexParser parser = new regex.RegexParser();
+      parser.compile("((abc)*d)").then((regex.RegexVM vm) {
+        return vm.match(conv.UTF8.encode("abcabcd")).then((List<List<int>> v){
+          expect(conv.UTF8.decode(v[0]),"abcabcd");
+          expect(conv.UTF8.decode(v[1]),"abc");
+          expect(conv.UTF8.decode(v[2]),"abc");
         });
       }).catchError((e) {
         expect(true, false);

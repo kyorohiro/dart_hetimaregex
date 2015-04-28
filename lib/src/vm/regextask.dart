@@ -28,7 +28,10 @@ class RegexTask {
 
   void tryAddMemory(List<int> v) {
     if(_memoryWritable.length > 0) {
-      _memory[_memoryWritable.last].addAll(v);
+//      _memory[_memoryWritable.last].addAll(v);
+      for(int i in _memoryWritable) {
+        _memory[i].addAll(v);
+      }
     }
   }
   
