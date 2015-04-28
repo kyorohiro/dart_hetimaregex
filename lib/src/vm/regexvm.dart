@@ -12,19 +12,15 @@ class RegexVM {
     _commands.add(command);
   }
 
-  void insertTask(int index, RegexTask task) {
+  void _addTask(RegexTask task) {
+      _tasks.add(task);
+  }
+
+  void _insertTask(int index, RegexTask task) {
     _tasks.insert(index, task);
   }
 
-  void addTask(RegexTask task, [bool isFirst = false]) {
-    if (isFirst && _tasks.length > 0) {
-      _tasks.insert(0, task);
-    } else {
-      _tasks.add(task);
-    }
-  }
-
-  bool get haveCurrentTask {
+  bool get _haveCurrentTask {
     if (_tasks.length > 0) {
       return true;
     } else {
@@ -32,16 +28,16 @@ class RegexVM {
     }
   }
 
-  RegexTask get currentTask {
-    if (haveCurrentTask) {
+  RegexTask get _currentTask {
+    if (_haveCurrentTask) {
       return _tasks[0];
     } else {
       throw new Exception("");
     }
   }
 
-  RegexTask eraseCurrentTask() {
-    if (haveCurrentTask) {
+  RegexTask _eraseCurrentTask() {
+    if (_haveCurrentTask) {
       RegexTask prevTask = _tasks[0];
       _tasks.removeAt(0);
       return prevTask;
@@ -50,19 +46,20 @@ class RegexVM {
     }
   }
 
-  async.Future<List<List<int>>> match(List<int> text) {
+  async.Future<List<List<int>>> lookingAt(List<int> text) {
     async.Completer completer = new async.Completer();
     heti.EasyParser parser = new heti.EasyParser(new heti.ArrayBuilder.fromList(text, true));
     _tasks.add(new RegexTask.fromCommnadPos(0, parser));
 
     loop() {
-      if (!haveCurrentTask) {
+      if (!_haveCurrentTask) {
         completer.completeError(new Exception());
+        return;
       }
-      currentTask.match(this).then((List<List<int>> v) {
+      _currentTask.lookingAt(this).then((List<List<int>> v) {
         completer.complete(v);
       }).catchError((e) {
-        eraseCurrentTask();
+        _eraseCurrentTask();
         loop();
       });
     }

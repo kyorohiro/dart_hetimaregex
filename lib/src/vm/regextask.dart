@@ -10,10 +10,10 @@ class RegexTask {
   int _nextMemoryId = 0;
 
   RegexTask.clone(RegexTask tasl, [int commandPos = -1]) {
-    if(commandPos != -1) {
+    if (commandPos != -1) {
       this._commandPos = commandPos;
     } else {
-      this._commandPos = tasl._commandPos;      
+      this._commandPos = tasl._commandPos;
     }
     this._parser = tasl._parser.toClone();
     this._memory = new List.from(tasl._memory);
@@ -27,14 +27,13 @@ class RegexTask {
   }
 
   void tryAddMemory(List<int> v) {
-    if(_memoryWritable.length > 0) {
-//      _memory[_memoryWritable.last].addAll(v);
-      for(int i in _memoryWritable) {
+    if (_memoryWritable.length > 0) {
+      for (int i in _memoryWritable) {
         _memory[i].addAll(v);
       }
     }
   }
-  
+
   async.Future<List<int>> executeNextCommand(RegexVM vm) {
     async.Completer<List<int>> completer = new async.Completer();
     if (_commandPos >= vm._commands.length) {
@@ -43,14 +42,14 @@ class RegexTask {
     }
     RegexCommand c = vm._commands[_commandPos];
     c.check(vm, _parser).then((List<int> v) {
-        completer.complete(v);
+      completer.complete(v);
     }).catchError((e) {
       completer.completeError(e);
     });
     return completer.future;
   }
 
-  async.Future<List<List<int>>> match(RegexVM vm) {
+  async.Future<List<List<int>>> lookingAt(RegexVM vm) {
     async.Completer<List<List<int>>> completer = new async.Completer();
     loop() {
       return executeNextCommand(vm).then((List<int> v) {

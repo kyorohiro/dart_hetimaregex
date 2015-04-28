@@ -53,7 +53,7 @@ class Pat {
       tmp.add(serializePart(i));
     }
 
-    if(!isRoot) {
+    if (!isRoot) {
       ret.add(new MemoryStartCommand());
     }
     if (commandList.length == 1) {
@@ -81,7 +81,7 @@ class Pat {
         }
       }
     }
-    if(!isRoot) {
+    if (!isRoot) {
       ret.add(new MemoryStopCommand());
     }
     return ret;
@@ -128,13 +128,10 @@ class RegexParser {
           case RegexToken.star:
             if (stack.last.command.last is Pat) {
               Pat p = stack.last.command.last;
-              stack.last.command.insert(stack.last.command.length - 1,
-                  new SplitTaskCommand.create(1, p.serialize().length + 2));
-              stack.last.command.add(
-                  new JumpTaskCommand.create(-1 * (p.serialize().length + 1)));
+              stack.last.command.insert(stack.last.command.length - 1, new SplitTaskCommand.create(1, p.serialize().length + 2));
+              stack.last.command.add(new JumpTaskCommand.create(-1 * (p.serialize().length + 1)));
             } else {
-              stack.last.command.insert(stack.last.command.length - 1,
-                  new SplitTaskCommand.create(1, 3));
+              stack.last.command.insert(stack.last.command.length - 1, new SplitTaskCommand.create(1, 3));
               stack.last.command.add(new JumpTaskCommand.create(-2));
             }
             break;

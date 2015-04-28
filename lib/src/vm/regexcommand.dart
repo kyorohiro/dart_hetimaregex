@@ -7,7 +7,7 @@ abstract class RegexCommand {
 class MemoryStartCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.currentTask;
+    RegexTask currentTask = vm._currentTask;
     int index = currentTask._nextMemoryId;
     currentTask._nextMemoryId++;
     currentTask._memory.add([]);
@@ -25,7 +25,7 @@ class MemoryStartCommand extends RegexCommand {
 class MemoryStopCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.currentTask;
+    RegexTask currentTask = vm._currentTask;
     currentTask._memoryWritable.removeLast();
     currentTask._commandPos++;
     c.complete([]);
@@ -35,9 +35,7 @@ class MemoryStopCommand extends RegexCommand {
   String toString() {
     return "<memory stop>";
   }
-
 }
-
 
 class MatchCommandNotification extends Error {
   MatchCommandNotification(dynamic mes) {}
@@ -68,7 +66,7 @@ class JumpTaskCommand extends RegexCommand {
 
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.currentTask;
+    RegexTask currentTask = vm._currentTask;
     if (currentTask == null) {
       throw new Exception("");
     }
@@ -78,7 +76,7 @@ class JumpTaskCommand extends RegexCommand {
     c.complete([]);
     return c.future;
   }
-  
+
   String toString() {
     return "<jump ${_pos1}>";
   }
@@ -100,15 +98,14 @@ class SplitTaskCommand extends RegexCommand {
 
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.currentTask;
+    RegexTask currentTask = vm._currentTask;
     if (currentTask == null) {
       throw new Exception("");
     }
 
     int currentPos = currentTask._commandPos;
     currentTask._commandPos = currentPos + _pos1;
-//    vm.addTask(new RegexTask.clone(currentTask, currentPos + _pos2));
-    vm.insertTask(1,new RegexTask.clone(currentTask, currentPos + _pos2));
+    vm._insertTask(1, new RegexTask.clone(currentTask, currentPos + _pos2));
 
     c.complete([]);
     return c.future;
@@ -145,7 +142,7 @@ class CharCommand extends RegexCommand {
         }
       }
       parser.pop();
-      RegexTask t = vm.currentTask;
+      RegexTask t = vm._currentTask;
       t._commandPos++;
       c.complete(v);
     });

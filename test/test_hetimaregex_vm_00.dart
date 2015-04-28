@@ -17,7 +17,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aa")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aa")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -30,7 +30,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -43,7 +43,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("ab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("ab")).then((List<List<int>> v) {
         expect(true, false);
       }).catchError((e) {
         expect(true, true);
@@ -58,7 +58,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("ab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("ab")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -73,7 +73,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aab")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -88,7 +88,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("ab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("ab")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -103,7 +103,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aab")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -118,7 +118,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aac")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aac")).then((List<List<int>> v) {
         expect(true, false);
       }).catchError((e) {
         expect(true, true);
@@ -135,7 +135,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("ab")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("ab")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -152,7 +152,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("b")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("b")).then((List<List<int>> v) {
         expect(true, true);
       }).catchError((e) {
         expect(true, false);
@@ -168,7 +168,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("c")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("c")).then((List<List<int>> v) {
         expect(true, false);
       }).catchError((e) {
         expect(true, true);
@@ -183,7 +183,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
         expect(true, true);
         expect(conv.UTF8.decode(v[0]), "aabb");
       }).catchError((e) {
@@ -207,7 +207,7 @@ void script00() {
         new regex.MatchCommand(),
       ]);
 
-      return vm.match(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
+      return vm.lookingAt(conv.UTF8.encode("aabbc")).then((List<List<int>> v) {
         expect(true, true);
         expect(conv.UTF8.decode(v[0]), "aa");
       }).catchError((e) {

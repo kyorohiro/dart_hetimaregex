@@ -1,17 +1,14 @@
 part of hetimaregex;
 
 class RegexLexer {
-  //
-  //
-  //
-  //
+
   async.Future<List<RegexToken>> scan(List<int> text) {
     async.Completer completer = new async.Completer();
     heti.EasyParser parser =
         new heti.EasyParser(new heti.ArrayBuilder.fromList(text, true));
 
     List<RegexToken> tokens = [];
-    a() {
+    loop() {
       parser.readByte().then((int v) {
         switch (v) {
           case 0x2a: // *
@@ -20,7 +17,7 @@ class RegexLexer {
           case 0x5c: // \
             parser.readByte().then((int v) {
               tokens.add(new RegexToken.fromChar(v, RegexToken.character));
-              a();
+              loop();
             });
             return;
           case 0x28: // (
@@ -36,12 +33,12 @@ class RegexLexer {
             tokens.add(new RegexToken.fromChar(v, RegexToken.character));
             break;
         }
-        a();
+        loop();
       }).catchError((e) {
         completer.complete(tokens);
       });
     }
-    a();
+    loop();
     return completer.future;
   }
 }
