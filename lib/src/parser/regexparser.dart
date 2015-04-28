@@ -41,79 +41,113 @@ class SignE extends Command {
     return c.future;
   }
 }
+
+class Pat {
+  List<List<Object>> commandList = [[]];
+  List<Object> get command => commandList[commandList.length - 1];
+  bool isRoot = false;
+  List<Command> serialize() {
+    List<Command> ret = [];
+    List<List<Command>> tmp = [];
+    for (int i = 0; i < commandList.length; i++) {
+      tmp.add(serializePart(i));
+    }
+
+    if(!isRoot) {
+      ret.add(new MemoryStartCommand());
+    }
+    if (commandList.length == 1) {
+      ret.addAll(tmp[0]);
+    } else {
+      int commandLength = (tmp.length - 1) * 2 + 1;
+      for (int i = 0; i < tmp.length; i++) {
+        commandLength += tmp[i].length;
+      }
+
+      int currentLength = 0;
+      for (int i = 0; i < tmp.length; i++) {
+        if (i < (tmp.length - 1)) {
+          ret.add(new SplitTaskCommand.create(1, tmp[i].length + 2));
+          currentLength += 1;
+          ret.addAll(tmp[i]);
+          currentLength += tmp[i].length;
+          ret.add(new JumpTaskCommand.create(commandLength - currentLength));
+          currentLength += 1;
+        } else {
+          ret.add(new SplitTaskCommand.create(1, tmp[i].length + 1));
+          currentLength += 1;
+          ret.addAll(tmp[i]);
+          currentLength += tmp[i].length;
+        }
+      }
+    }
+    if(!isRoot) {
+      ret.add(new MemoryStopCommand());
+    }
+    return ret;
+  }
+  List<Command> serializePart(int index) {
+    List<Command> ret = [];
+    List<Object> stack = [];
+    stack.insertAll(0, commandList[index]);
+    while (stack.length > 0) {
+      Object current = stack.removeAt(0);
+      if (current is Pat) {
+        stack.insertAll(0, (current as Pat).serialize());
+      } else {
+        ret.add(current);
+      }
+    }
+    return ret;
+  }
+}
+
 class RegexParser {
-  async.Future<RegexVM> compile(String source) {
+  async.Future<RegexVM> compile2(String source) {
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
 
-    int _signNumIn(SignE e, List<Command> ret) {
-      int indexE = ret.indexOf(e);
-      int indexS = ret.indexOf(e.s);
-      int r = 0;
-      for(int i= indexS;i<=indexE;i++) {
-        if(ret[i] is SignE || ret[i] is SignS) {
-          r++;
-        }
-      }
-      return r;
-    }
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens) {
-      List<Command> ret = [];
-      List<SignS> stackMemoryStartStop = [];
-      List<Command> cashMemoryStartStop = [];
-      int id = 0;
+      Pat root = new Pat();
+      root.isRoot = true;
+      List<Pat> stack = [root];
 
       for (RegexToken t in tokens) {
         switch (t.kind) {
           case RegexToken.character:
-            ret.add(new CharCommand.createFromList([t.value]));
+            stack.last.command.add(new CharCommand.createFromList([t.value]));
             break;
           case RegexToken.lparan:
-            {
-              SignS s = new SignS(id++);
-              ret.add(s);
-              stackMemoryStartStop.add(s);
-              cashMemoryStartStop.add(s);
-            }
-            ret.add(new MemoryStartCommand());
+            Pat l = new Pat();
+            stack.last.command.add(l);
+            stack.add(l);
             break;
           case RegexToken.rparen:
-            ret.add(new MemoryStopCommand());
-            {
-              SignE e = new SignE(stackMemoryStartStop.last);
-              ret.add(e);
-              cashMemoryStartStop.add(e);
-              stackMemoryStartStop.removeLast();
-            }
+            stack.removeLast();
             break;
           case RegexToken.star:
-            if (ret.last is SignE) {
-              int a1 = ret.length-_signNumIn(ret.last, ret);//cashMemoryStartStop.length;
-              int index = ret.indexOf((ret.last as SignE).s);
-              ret.insert(index, new SplitTaskCommand.create(1, a1 - index+2));
-              ret.add(new JumpTaskCommand.create(-1 * (a1 - index+1)));
+            if (stack.last.command.last is Pat) {
+              Pat p = stack.last.command.last;
+              stack.last.command.insert(stack.last.command.length - 1,
+                  new SplitTaskCommand.create(1, p.serialize().length + 2));
+              stack.last.command.add(
+                  new JumpTaskCommand.create(-1 * (p.serialize().length + 1)));
             } else {
-              ret.insert(ret.length - 1, new SplitTaskCommand.create(1, 3));
-              ret.add(new JumpTaskCommand.create(-2));
+              stack.last.command.insert(stack.last.command.length - 1,
+                  new SplitTaskCommand.create(1, 3));
+              stack.last.command.add(new JumpTaskCommand.create(-2));
             }
             break;
           case RegexToken.union:
-            if (stackMemoryStartStop.length == 0) {
-              int a1 = ret.length;
-              ret.insert(0, new SplitTaskCommand.create(1, a1));
-            } else {
-              int a1 = ret.length;
-              int index = ret.indexOf((ret.last as SignE).s);
-              ret.insert(index, new SplitTaskCommand.create(1, a1 - index));
-            }
+            //
+            // '|'は次のパターン決まるまで確定しないので、後でコンパイルする。
+            stack.last.commandList.add([]);
             break;
         }
       }
-
+      List<Command> ret = [];
+      ret.addAll(root.serialize());
       ret.add(new MatchCommand());
-      for (Command c in cashMemoryStartStop) {
-        ret.remove(c);
-      }
       print("--");
       for (Command c in ret) {
         print("${c.toString()}");
