@@ -17,15 +17,39 @@ class RegexToken {
   }
 }
 
+class SignS extends Command {
+  int id = 0;
+  SignS(int id) {
+    this.id = id;
+  }
+  async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
+    async.Completer c = new async.Completer();
+    c.complete([]);
+    return c.future;
+  }
+}
+class SignE extends Command {
+  SignS s = null;
+  SignE(SignS s) {
+    this.s = s;
+  }
+  async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
+    async.Completer c = new async.Completer();
+    c.complete([]);
+    return c.future;
+  }
+}
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
-
 
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
 
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens){
       List<Command> ret = [];
+      List<SignS> stackMemoryStartStop = [];
+      int id = 0;
+
       for(RegexToken t in tokens) {
         switch(t.kind) {
           case RegexToken.character:
@@ -33,12 +57,23 @@ class RegexParser {
             break;
           case RegexToken.lparan:
             ret.add(new MemoryStartCommand());
+            SignS s = new SignS(id++);
+            ret.add(s);
+            stackMemoryStartStop.add(s);
             break;
           case RegexToken.rparen:
             ret.add(new MemoryStopCommand());
+            ret.add(new SignE(stackMemoryStartStop.last));
+            stackMemoryStartStop.removeLast();
             break;
           case RegexToken.star:
-            ret.insert(ret.length-2, new SplitTaskCommand.create(1, 2));
+            if(ret.last is SignE) {
+              int a1 = ret.length;
+              int index = ret.indexOf((ret.last as SignE).s);
+              ret.insert(index, new SplitTaskCommand.create(1, a1-index));              
+            } else {
+              ret.insert(ret.length-2, new SplitTaskCommand.create(1, 2));
+            }
             break;
         }
       }

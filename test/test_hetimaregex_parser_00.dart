@@ -44,6 +44,18 @@ void script00() {
         expect(true, false);
       });
     });
+
+    test('char true d', () {
+      regex.RegexParser parser = new regex.RegexParser();
+      parser.compile("(ab)*").then((regex.RegexVM vm) {
+        return vm.match(conv.UTF8.encode("ababc")).then((List<List<int>> v){
+          expect(true, true);
+          expect(conv.UTF8.decode(v[0]),"abab");
+        });
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
 /*
     test('char true', () {
       regex.RegexParser parser = new regex.RegexParser();
