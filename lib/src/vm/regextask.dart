@@ -41,7 +41,7 @@ class RegexTask {
       completer.completeError(new Exception(""));
       return completer.future;
     }
-    Command c = vm._commands[_commandPos];
+    RegexCommand c = vm._commands[_commandPos];
     c.check(vm, _parser).then((List<int> v) {
         completer.complete(v);
     }).catchError((e) {

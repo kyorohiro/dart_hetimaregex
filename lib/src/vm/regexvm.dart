@@ -1,14 +1,14 @@
 part of hetimaregex;
 
 class RegexVM {
-  List<Command> _commands = [];
+  List<RegexCommand> _commands = [];
   List<RegexTask> _tasks = [];
 
-  RegexVM.createFromCommand(List<Command> command) {
+  RegexVM.createFromCommand(List<RegexCommand> command) {
     _commands = new List.from(command);
   }
 
-  void addCommand(Command command) {
+  void addCommand(RegexCommand command) {
     _commands.add(command);
   }
 
@@ -16,29 +16,37 @@ class RegexVM {
     _tasks.insert(index, task);
   }
 
-  void addTask(RegexTask task,[bool isFirst=false]) {
-    if(isFirst && _tasks.length > 0) {
+  void addTask(RegexTask task, [bool isFirst = false]) {
+    if (isFirst && _tasks.length > 0) {
       _tasks.insert(0, task);
     } else {
       _tasks.add(task);
     }
   }
 
-  RegexTask getCurrentTask() {
+  bool get haveCurrentTask {
     if (_tasks.length > 0) {
-      return _tasks[0];
+      return true;
     } else {
-      return null;
+      return false;
     }
   }
 
-  RegexTask popCurrentTask() {
-    if (_tasks.length > 0) {
-      RegexTask t = _tasks[0];
-      _tasks.removeAt(0);
-      return t;
+  RegexTask get currentTask {
+    if (haveCurrentTask) {
+      return _tasks[0];
     } else {
-      return null;
+      throw new Exception("");
+    }
+  }
+
+  RegexTask eraseCurrentTask() {
+    if (haveCurrentTask) {
+      RegexTask prevTask = _tasks[0];
+      _tasks.removeAt(0);
+      return prevTask;
+    } else {
+      throw new Exception("");
     }
   }
 
@@ -48,15 +56,13 @@ class RegexVM {
     _tasks.add(new RegexTask.fromCommnadPos(0, parser));
 
     loop() {
-      RegexTask task = getCurrentTask();
-      if (task == null) {
+      if (!haveCurrentTask) {
         completer.completeError(new Exception());
-        return;
       }
-      task.match(this).then((List<List<int>> v) {
+      currentTask.match(this).then((List<List<int>> v) {
         completer.complete(v);
       }).catchError((e) {
-        popCurrentTask();
+        eraseCurrentTask();
         loop();
       });
     }

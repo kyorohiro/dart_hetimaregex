@@ -1,13 +1,13 @@
 part of hetimaregex;
 
-abstract class Command {
+abstract class RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser);
 }
 
-class MemoryStartCommand extends Command {
+class MemoryStartCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.getCurrentTask();
+    RegexTask currentTask = vm.currentTask;
     int index = currentTask._nextMemoryId;
     currentTask._nextMemoryId++;
     currentTask._memory.add([]);
@@ -22,10 +22,10 @@ class MemoryStartCommand extends Command {
   }
 }
 
-class MemoryStopCommand extends Command {
+class MemoryStopCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.getCurrentTask();
+    RegexTask currentTask = vm.currentTask;
     currentTask._memoryWritable.removeLast();
     currentTask._commandPos++;
     c.complete([]);
@@ -43,7 +43,7 @@ class MatchCommandNotification extends Error {
   MatchCommandNotification(dynamic mes) {}
 }
 
-class MatchCommand extends Command {
+class MatchCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
     c.completeError(new MatchCommandNotification(""));
@@ -54,7 +54,7 @@ class MatchCommand extends Command {
   }
 }
 
-class JumpTaskCommand extends Command {
+class JumpTaskCommand extends RegexCommand {
   static final int LM1 = -1;
   static final int L0 = 0;
   static final int L1 = 1;
@@ -68,7 +68,7 @@ class JumpTaskCommand extends Command {
 
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.getCurrentTask();
+    RegexTask currentTask = vm.currentTask;
     if (currentTask == null) {
       throw new Exception("");
     }
@@ -84,7 +84,7 @@ class JumpTaskCommand extends Command {
   }
 }
 
-class SplitTaskCommand extends Command {
+class SplitTaskCommand extends RegexCommand {
   static final int LM1 = -1;
   static final int L0 = 0;
   static final int L1 = 1;
@@ -100,7 +100,7 @@ class SplitTaskCommand extends Command {
 
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
-    RegexTask currentTask = vm.getCurrentTask();
+    RegexTask currentTask = vm.currentTask;
     if (currentTask == null) {
       throw new Exception("");
     }
@@ -119,7 +119,7 @@ class SplitTaskCommand extends Command {
   }
 }
 
-class CharCommand extends Command {
+class CharCommand extends RegexCommand {
   List<int> _expect = [];
   CharCommand.createFromList(List<int> v) {
     _expect = new List.from(v);
@@ -145,7 +145,7 @@ class CharCommand extends Command {
         }
       }
       parser.pop();
-      RegexTask t = vm.getCurrentTask();
+      RegexTask t = vm.currentTask;
       t._commandPos++;
       c.complete(v);
     });

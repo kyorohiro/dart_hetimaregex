@@ -17,7 +17,7 @@ class RegexToken {
   }
 }
 
-class SignS extends Command {
+class SignS extends RegexCommand {
   int id = 0;
   SignS(int id) {
     this.id = id;
@@ -29,7 +29,7 @@ class SignS extends Command {
   }
 }
 
-class SignE extends Command {
+class SignE extends RegexCommand {
   SignS s = null;
   SignE(SignS s) {
     this.s = s;
@@ -46,9 +46,9 @@ class Pat {
   List<List<Object>> commandList = [[]];
   List<Object> get command => commandList[commandList.length - 1];
   bool isRoot = false;
-  List<Command> serialize() {
-    List<Command> ret = [];
-    List<List<Command>> tmp = [];
+  List<RegexCommand> serialize() {
+    List<RegexCommand> ret = [];
+    List<List<RegexCommand>> tmp = [];
     for (int i = 0; i < commandList.length; i++) {
       tmp.add(serializePart(i));
     }
@@ -86,8 +86,8 @@ class Pat {
     }
     return ret;
   }
-  List<Command> serializePart(int index) {
-    List<Command> ret = [];
+  List<RegexCommand> serializePart(int index) {
+    List<RegexCommand> ret = [];
     List<Object> stack = [];
     stack.insertAll(0, commandList[index]);
     while (stack.length > 0) {
@@ -145,11 +145,11 @@ class RegexParser {
             break;
         }
       }
-      List<Command> ret = [];
+      List<RegexCommand> ret = [];
       ret.addAll(root.serialize());
       ret.add(new MatchCommand());
       print("--");
-      for (Command c in ret) {
+      for (RegexCommand c in ret) {
         print("${c.toString()}");
       }
       RegexVM vm = new RegexVM.createFromCommand(ret);
