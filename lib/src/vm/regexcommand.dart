@@ -11,8 +11,8 @@ class MemoryStartCommand extends RegexCommand {
     int index = currentTask._nextMemoryId;
     currentTask._nextMemoryId++;
     currentTask._memory.add([]);
-    currentTask._memoryWritable.add(index);
-    currentTask._commandPos++;
+    currentTask._currentMemoryTargetId.add(index);
+    currentTask._nextCommandLocation++;
     c.complete([]);
     return c.future;
   }
@@ -26,8 +26,8 @@ class MemoryStopCommand extends RegexCommand {
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
     async.Completer<List<int>> c = new async.Completer();
     RegexTask currentTask = vm._currentTask;
-    currentTask._memoryWritable.removeLast();
-    currentTask._commandPos++;
+    currentTask._currentMemoryTargetId.removeLast();
+    currentTask._nextCommandLocation++;
     c.complete([]);
     return c.future;
   }
@@ -71,8 +71,8 @@ class JumpTaskCommand extends RegexCommand {
       throw new Exception("");
     }
 
-    int currentPos = currentTask._commandPos;
-    currentTask._commandPos = currentPos + _pos1;
+    int currentPos = currentTask._nextCommandLocation;
+    currentTask._nextCommandLocation = currentPos + _pos1;
     c.complete([]);
     return c.future;
   }
@@ -103,8 +103,8 @@ class SplitTaskCommand extends RegexCommand {
       throw new Exception("");
     }
 
-    int currentPos = currentTask._commandPos;
-    currentTask._commandPos = currentPos + _pos1;
+    int currentPos = currentTask._nextCommandLocation;
+    currentTask._nextCommandLocation = currentPos + _pos1;
     vm._insertTask(1, new RegexTask.clone(currentTask, currentPos + _pos2));
 
     c.complete([]);
@@ -143,7 +143,7 @@ class CharCommand extends RegexCommand {
       }
       parser.pop();
       RegexTask t = vm._currentTask;
-      t._commandPos++;
+      t._nextCommandLocation++;
       c.complete(v);
     });
     return c.future;
