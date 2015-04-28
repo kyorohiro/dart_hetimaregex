@@ -107,8 +107,8 @@ class SplitTaskCommand extends Command {
 
     int currentPos = currentTask._commandPos;
     currentTask._commandPos = currentPos + _pos1;
-//  vm.addTask(new RegexTask.fromCommnadPos(currentPos + _pos2, parser));
-  vm.addTask(new RegexTask.clone(currentTask, currentPos + _pos2));
+//    vm.addTask(new RegexTask.clone(currentTask, currentPos + _pos2));
+    vm.insertTask(1,new RegexTask.clone(currentTask, currentPos + _pos2));
 
     c.complete([]);
     return c.future;

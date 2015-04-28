@@ -11,6 +11,7 @@ void main() => script00();
 
 void script00() {
   group('parser00', () {
+    /*
     test('char true a', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("aa").then((regex.RegexVM vm) {
@@ -42,7 +43,7 @@ void script00() {
         expect(true, false);
       });
     });
-/*
+*/
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("(ab)*").then((regex.RegexVM vm) {
@@ -53,7 +54,6 @@ void script00() {
         expect(true, false);
       });
     });
-    */
   });
 }
 

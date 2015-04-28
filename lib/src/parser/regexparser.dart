@@ -41,73 +41,76 @@ class SignE extends Command {
 }
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
-
     async.Completer<RegexVM> completer = new async.Completer();
     RegexLexer lexer = new RegexLexer();
 
-    lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens){
+    lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens) {
       List<Command> ret = [];
       List<SignS> stackMemoryStartStop = [];
       List<Command> cashMemoryStartStop = [];
       int id = 0;
 
-      for(RegexToken t in tokens) {
-        switch(t.kind) {
+      for (RegexToken t in tokens) {
+        switch (t.kind) {
           case RegexToken.character:
             ret.add(new CharCommand.createFromList([t.value]));
             break;
           case RegexToken.lparan:
+            {
+              SignS s = new SignS(id++);
+              ret.add(s);
+              stackMemoryStartStop.add(s);
+              cashMemoryStartStop.add(s);
+            }
             ret.add(new MemoryStartCommand());
-            SignS s = new SignS(id++);
-            ret.add(s);
-            stackMemoryStartStop.add(s);
-            cashMemoryStartStop.add(s);
             break;
           case RegexToken.rparen:
             ret.add(new MemoryStopCommand());
-            SignE e = new SignE(stackMemoryStartStop.last);
-            ret.add(e);
-            cashMemoryStartStop.add(e);
-            stackMemoryStartStop.removeLast();
+            {
+              SignE e = new SignE(stackMemoryStartStop.last);
+              ret.add(e);
+              cashMemoryStartStop.add(e);
+              stackMemoryStartStop.removeLast();
+            }
             break;
           case RegexToken.star:
-            if(ret.last is SignE) {
-              int a1 = ret.length;
+            if (ret.last is SignE) {
+              int a1 = ret.length-cashMemoryStartStop.length;
               int index = ret.indexOf((ret.last as SignE).s);
-              ret.insert(index, new SplitTaskCommand.create(1, a1-index));  
-              ret.add(new JumpTaskCommand.create(-1*(a1-index)));
+              ret.insert(index, new SplitTaskCommand.create(1, a1 - index+2));
+              ret.add(new JumpTaskCommand.create(-1 * (a1 - index+1)));
             } else {
-              ret.insert(ret.length-1, new SplitTaskCommand.create(1, 3));
+              ret.insert(ret.length - 1, new SplitTaskCommand.create(1, 3));
               ret.add(new JumpTaskCommand.create(-2));
             }
             break;
           case RegexToken.union:
-            if(stackMemoryStartStop.length == 0) {
+            if (stackMemoryStartStop.length == 0) {
               int a1 = ret.length;
               ret.insert(0, new SplitTaskCommand.create(1, a1));
             } else {
               int a1 = ret.length;
               int index = ret.indexOf((ret.last as SignE).s);
-              ret.insert(index, new SplitTaskCommand.create(1, a1-index));  
+              ret.insert(index, new SplitTaskCommand.create(1, a1 - index));
             }
             break;
         }
       }
 
       ret.add(new MatchCommand());
-      for(Command c in cashMemoryStartStop) {
+      for (Command c in cashMemoryStartStop) {
         ret.remove(c);
       }
-      for(Command c in ret) {
-        print("${c.toString()}\n");
+      print("--");
+      for (Command c in ret) {
+        print("${c.toString()}");
       }
       RegexVM vm = new RegexVM.createFromCommand(ret);
 
       completer.complete(vm);
-    }).catchError((e){
+    }).catchError((e) {
       completer.completeError(e);
     });
     return completer.future;
   }
 }
-

@@ -12,8 +12,16 @@ class RegexVM {
     _commands.add(command);
   }
 
-  void addTask(RegexTask task) {
-    _tasks.add(task);
+  void insertTask(int index, RegexTask task) {
+    _tasks.insert(index, task);
+  }
+
+  void addTask(RegexTask task,[bool isFirst=false]) {
+    if(isFirst && _tasks.length > 0) {
+      _tasks.insert(0, task);
+    } else {
+      _tasks.add(task);
+    }
   }
 
   RegexTask getCurrentTask() {
