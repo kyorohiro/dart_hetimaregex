@@ -10,6 +10,25 @@ class CharacterPattern extends RegexGroup {
   }
 }
 
+class StarPattern extends RegexGroup {
+  RegexGroup e1 = null;
+
+  StarPattern.fromPattern(RegexGroup e1) {
+    this.e1 = e1;
+  }
+
+  List<RegexCommand> convertRegexCommands() {
+    List<RegexCommand> e1List = e1.convertRegexCommands();
+
+    List<RegexCommand> ret = [];
+    ret.add(new SplitTaskCommand.create(1, (e1List.length)+2));
+    ret.addAll(e1List);
+    ret.add(new JumpTaskCommand.create(-1*(e1List.length)-1));
+    return ret;
+  }
+}
+
+
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
     async.Completer<RegexVM> completer = new async.Completer();
@@ -34,6 +53,9 @@ class RegexParser {
             stack.removeLast();
             break;
           case RegexToken.star:
+            stack.last.elements.add(new StarPattern.fromPattern(
+                stack.last.elements.removeLast()));
+            /*
             if (stack.last.elements.last is RegexGroup) {
               RegexGroup p = stack.last.elements.last;
               stack.last.elements.insert(stack.last.elements.length - 1, new SplitTaskCommand.create(1, p.convertRegexCommands().length + 2));
@@ -41,7 +63,7 @@ class RegexParser {
             } else {
               stack.last.elements.insert(stack.last.elements.length - 1, new SplitTaskCommand.create(1, 3));
               stack.last.elements.add(new JumpTaskCommand.create(-2));
-            }
+            }*/
             break;
           case RegexToken.union:
             //

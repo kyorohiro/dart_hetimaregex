@@ -22,7 +22,7 @@ class RegexVM {
 
   String toString() {
     String ret = "";
-    for (RegexCommand c in ret) {
+    for (RegexCommand c in _commands) {
       ret += "${c.toString()}\n";
     }
     return ret;
