@@ -1,7 +1,7 @@
 part of hetimaregex;
 
 
-class RegexGroup {
+class GroupPattern extends RegexGroup {
 
   List<List<Object>> elementsPerOrgroup = [[]];
   List<Object> get elements => elementsPerOrgroup[elementsPerOrgroup.length - 1];
@@ -69,6 +69,41 @@ class RegexGroup {
         ret.add(current);
       }
     }
+    return ret;
+  }
+}
+
+abstract class RegexGroup {
+  List<List<Object>> elementsPerOrgroup = [[]];
+  List<Object> get elements => elementsPerOrgroup[elementsPerOrgroup.length - 1];
+  bool isRoot = false;
+  List<RegexCommand> convertRegexCommands();
+}
+
+class CharacterPattern extends RegexGroup {
+  List<int> _characters = [];
+  CharacterPattern.fromBytes(List<int> v) {
+    _characters.addAll(v);
+  }
+  List<RegexCommand> convertRegexCommands() {
+    return [new CharCommand.createFromList(_characters)];
+  }
+}
+
+class StarPattern extends RegexGroup {
+  RegexGroup e1 = null;
+
+  StarPattern.fromPattern(RegexGroup e1) {
+    this.e1 = e1;
+  }
+
+  List<RegexCommand> convertRegexCommands() {
+    List<RegexCommand> e1List = e1.convertRegexCommands();
+
+    List<RegexCommand> ret = [];
+    ret.add(new SplitTaskCommand.create(1, (e1List.length)+2));
+    ret.addAll(e1List);
+    ret.add(new JumpTaskCommand.create(-1*(e1List.length)-1));
     return ret;
   }
 }
