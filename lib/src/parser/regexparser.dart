@@ -1,5 +1,14 @@
 part of hetimaregex;
 
+class CharacterPattern extends RegexGroup {
+  List<int> _characters = [];
+  CharacterPattern.fromBytes(List<int> v) {
+    _characters.addAll(v);
+  }
+  List<RegexCommand> convertRegexCommands() {
+    return [new CharCommand.createFromList(_characters)];
+  }
+}
 
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
@@ -14,7 +23,7 @@ class RegexParser {
       for (RegexToken t in tokens) {
         switch (t.kind) {
           case RegexToken.character:
-            stack.last.elements.add(new CharCommand.createFromList([t.value]));
+            stack.last.elements.add(new CharacterPattern.fromBytes([t.value]));
             break;
           case RegexToken.lparan:
             RegexGroup l = new RegexGroup();

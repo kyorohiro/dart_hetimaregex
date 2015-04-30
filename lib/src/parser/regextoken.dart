@@ -16,3 +16,4 @@ class RegexToken {
     this.kind = kind;
   }
 }
+
