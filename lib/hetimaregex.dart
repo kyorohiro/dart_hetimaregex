@@ -10,4 +10,4 @@ part 'src/vm/regexcommand.dart';
 part 'src/parser/regexparser.dart';
 part 'src/parser/regexlexer.dart';
 part 'src/parser/regextoken.dart';
-part 'src/parser/regexgroup.dart';
+part 'src/parser/regexnode.dart';
