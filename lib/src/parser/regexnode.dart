@@ -1,27 +1,40 @@
 part of hetimaregex;
 
-
 class GroupPattern extends RegexNode {
+  List<GroupPattern> elementsPerOrgroup = [];
+  bool dontMemory = false;
 
-  List<List<Object>> elementsPerOrgroup = [[]];
-  List<Object> get elements => elementsPerOrgroup[elementsPerOrgroup.length - 1];
-  bool isRoot = false;
+  GroupPattern({isRoot: false, List<Object> elements: null}) {
+    this.dontMemory = isRoot;
+    if (elements == null) {
+      this.elements = [];
+    } else {
+      this.elements = new List.from(elements);
+    }
+  }
 
   List<RegexCommand> convertRegexCommands() {
     List<RegexCommand> ret = [];
     List<List<RegexCommand>> commandPerOrgroup = [];
 
-    for (int i = 0; i < elementsPerOrgroup.length; i++) {
-      commandPerOrgroup.add(_toRegexCommandPerGroup(i));
+    for (GroupPattern p in elementsPerOrgroup) {
+      commandPerOrgroup.add(p.convertRegexCommands());
+    }
+    {
+      List<RegexCommand> t = [];
+      for (RegexNode n in elements) {
+        t.addAll(n.convertRegexCommands());
+      }
+      commandPerOrgroup.add(t);
     }
 
-    if (!isRoot) {
+    if (!dontMemory) {
       ret.add(new MemoryStartCommand());
     }
 
     ret.addAll(_combineRegexCommand(commandPerOrgroup));
 
-    if (!isRoot) {
+    if (!dontMemory) {
       ret.add(new MemoryStopCommand());
     }
     return ret;
@@ -30,8 +43,9 @@ class GroupPattern extends RegexNode {
   List<RegexCommand> _combineRegexCommand(List<List<RegexCommand>> tmp) {
     List<RegexCommand> ret = [];
 
-    if (elementsPerOrgroup.length == 1) {
+    if (tmp.length == 1) {
       ret.addAll(tmp[0]);
+      return ret;
     } else {
       int commandLength = (tmp.length - 1) * 2 + 1;
       for (int i = 0; i < tmp.length; i++) {
@@ -57,26 +71,10 @@ class GroupPattern extends RegexNode {
     }
     return ret;
   }
-  List<RegexCommand> _toRegexCommandPerGroup(int index) {
-    List<RegexCommand> ret = [];
-    List<Object> stack = [];
-    stack.insertAll(0, elementsPerOrgroup[index]);
-    while (stack.length > 0) {
-      Object current = stack.removeAt(0);
-      if (current is RegexNode) {
-        stack.insertAll(0, (current as RegexNode).convertRegexCommands());
-      } else {
-        ret.add(current);
-      }
-    }
-    return ret;
-  }
 }
 
 abstract class RegexNode {
-  List<List<Object>> elementsPerOrgroup = [[]];
-  List<Object> get elements => elementsPerOrgroup[elementsPerOrgroup.length - 1];
-  bool isRoot = false;
+  List<Object> elements = [];
   List<RegexCommand> convertRegexCommands();
 }
 
@@ -101,9 +99,9 @@ class StarPattern extends RegexNode {
     List<RegexCommand> e1List = e1.convertRegexCommands();
 
     List<RegexCommand> ret = [];
-    ret.add(new SplitTaskCommand.create(1, (e1List.length)+2));
+    ret.add(new SplitTaskCommand.create(1, (e1List.length) + 2));
     ret.addAll(e1List);
-    ret.add(new JumpTaskCommand.create(-1*(e1List.length)-1));
+    ret.add(new JumpTaskCommand.create(-1 * (e1List.length) - 1));
     return ret;
   }
 }

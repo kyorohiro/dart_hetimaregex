@@ -1,5 +1,6 @@
 part of hetimaregex;
 
+
 class RegexParser {
   async.Future<RegexVM> compile(String source) {
     async.Completer<RegexVM> completer = new async.Completer();
@@ -7,8 +8,8 @@ class RegexParser {
 
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens) {
       GroupPattern root = new GroupPattern();
-      root.isRoot = true;
-      List<RegexNode> stack = [root];
+      root.dontMemory = true;
+      List<GroupPattern> stack = [root];
 
       for (RegexToken t in tokens) {
         switch (t.kind) {
@@ -27,7 +28,8 @@ class RegexParser {
             stack.last.elements.add(new StarPattern.fromPattern(stack.last.elements.removeLast()));
             break;
           case RegexToken.union:
-            stack.last.elementsPerOrgroup.add([]);
+            stack.last.elementsPerOrgroup.add(new GroupPattern(isRoot:true, elements:stack.last.elements));
+            elements:stack.last.elements.clear();
             break;
         }
       }

@@ -11,7 +11,7 @@ void main() => script00();
 
 void script00() {
   group('parser00', () {
-/*
+
     test('char true a', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("aa").then((regex.RegexVM vm) {
@@ -53,11 +53,11 @@ void script00() {
         expect(true, false);
       });
     });
-*/
+
     test('char true d', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("(ab)*").then((regex.RegexVM vm) {
-       // print(vm.toString());
+        print(vm.toString());
         return vm.lookingAt(conv.UTF8.encode("ababc")).then((List<List<int>> v){
           expect(conv.UTF8.decode(v[0]),"ab");
           expect(conv.UTF8.decode(v[1]),"ab");
