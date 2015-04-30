@@ -1,5 +1,38 @@
 part of hetimaregex;
 
+abstract class RegexNode {
+  List<Object> elements = [];
+  List<RegexCommand> convertRegexCommands();
+}
+
+class CharacterPattern extends RegexNode {
+  List<int> _characters = [];
+  CharacterPattern.fromBytes(List<int> v) {
+    _characters.addAll(v);
+  }
+  List<RegexCommand> convertRegexCommands() {
+    return [new CharCommand.createFromList(_characters)];
+  }
+}
+
+class StarPattern extends RegexNode {
+  RegexNode e1 = null;
+
+  StarPattern.fromPattern(RegexNode e1) {
+    this.e1 = e1;
+  }
+
+  List<RegexCommand> convertRegexCommands() {
+    List<RegexCommand> e1List = e1.convertRegexCommands();
+
+    List<RegexCommand> ret = [];
+    ret.add(new SplitTaskCommand.create(1, (e1List.length) + 2));
+    ret.addAll(e1List);
+    ret.add(new JumpTaskCommand.create(-1 * (e1List.length) - 1));
+    return ret;
+  }
+}
+
 class GroupPattern extends RegexNode {
   List<GroupPattern> elementsPerOrgroup = [];
   bool dontMemory = false;
@@ -73,35 +106,4 @@ class GroupPattern extends RegexNode {
   }
 }
 
-abstract class RegexNode {
-  List<Object> elements = [];
-  List<RegexCommand> convertRegexCommands();
-}
 
-class CharacterPattern extends RegexNode {
-  List<int> _characters = [];
-  CharacterPattern.fromBytes(List<int> v) {
-    _characters.addAll(v);
-  }
-  List<RegexCommand> convertRegexCommands() {
-    return [new CharCommand.createFromList(_characters)];
-  }
-}
-
-class StarPattern extends RegexNode {
-  RegexNode e1 = null;
-
-  StarPattern.fromPattern(RegexNode e1) {
-    this.e1 = e1;
-  }
-
-  List<RegexCommand> convertRegexCommands() {
-    List<RegexCommand> e1List = e1.convertRegexCommands();
-
-    List<RegexCommand> ret = [];
-    ret.add(new SplitTaskCommand.create(1, (e1List.length) + 2));
-    ret.addAll(e1List);
-    ret.add(new JumpTaskCommand.create(-1 * (e1List.length) - 1));
-    return ret;
-  }
-}
