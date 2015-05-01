@@ -1,6 +1,6 @@
 library hetimaregex;
 
-import 'package:hetima/hetima.dart' as heti;
+import 'package:hetimacore/hetimacore.dart' as heti;
 import 'dart:async' as async;
 import 'dart:convert' as conv;
 

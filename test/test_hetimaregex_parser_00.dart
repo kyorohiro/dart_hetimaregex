@@ -2,7 +2,7 @@ library dart_hetimaparser_test_parser;
 
 import 'package:hetimaregex/hetimaregex.dart' as regex;
 import 'package:unittest/unittest.dart';
-import 'package:hetima/hetima.dart' as heti;
+import 'package:hetimacore/hetimacore.dart' as heti;
 
 import 'dart:convert' as conv;
 import 'dart:typed_data' as tdata;
