@@ -2,10 +2,8 @@ library dart_hetimaregex_test_vm;
 
 import 'package:hetimaregex/hetimaregex.dart' as regex;
 import 'package:unittest/unittest.dart';
-import 'package:hetimacore/hetimacore.dart' as heti;
 
 import 'dart:convert' as conv;
-import 'dart:typed_data' as tdata;
 
 void main() => script00();
 
