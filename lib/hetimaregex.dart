@@ -11,3 +11,5 @@ part 'src/parser/regexparser.dart';
 part 'src/parser/regexlexer.dart';
 part 'src/parser/regextoken.dart';
 part 'src/parser/regexnode.dart';
+part 'src/ext/regexeasyparser.dart';
+
