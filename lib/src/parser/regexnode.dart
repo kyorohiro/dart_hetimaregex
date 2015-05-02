@@ -82,6 +82,14 @@ class GroupPattern extends RegexNode {
     return ret;
   }
 
+  int _commandLengthAfterCombined(List<List<RegexCommand>> tmp) {
+    int commandLength = (tmp.length - 1) * 2 + 1;
+    for (int i = 0; i < tmp.length; i++) {
+      commandLength += tmp[i].length;
+    }
+    return commandLength;
+  }
+
   List<RegexCommand> _combineRegexCommand(List<List<RegexCommand>> tmp) {
     List<RegexCommand> ret = [];
 
@@ -89,10 +97,7 @@ class GroupPattern extends RegexNode {
       ret.addAll(tmp[0]);
       return ret;
     } else {
-      int commandLength = (tmp.length - 1) * 2 + 1;
-      for (int i = 0; i < tmp.length; i++) {
-        commandLength += tmp[i].length;
-      }
+      int commandLength = _commandLengthAfterCombined(tmp);
 
       int currentLength = 0;
       for (int i = 0; i < tmp.length; i++) {
