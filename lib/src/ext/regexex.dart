@@ -1,9 +1,15 @@
 part of hetimaregex;
 
-class OrCommand extends RegexCommand {
+class AllCharCommand extends RegexCommand {
   
   @override
   async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
-    return null;
+    async.Completer<List<int>> c = new async.Completer();
+    parser.readByte().then((int v) {
+      c.complete([v]);      
+    }).catchError((e){
+      c.completeError(e);
+    });
+    return c;
   }
 }
