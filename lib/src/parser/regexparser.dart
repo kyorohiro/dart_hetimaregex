@@ -7,8 +7,7 @@ class RegexParser {
     RegexLexer lexer = new RegexLexer();
 
     lexer.scan(conv.UTF8.encode(source)).then((List<RegexToken> tokens) {
-      GroupPattern root = new GroupPattern();
-      root.dontMemory = true;
+      GroupPattern root = new GroupPattern(isSaveInMemory:false);
       List<GroupPattern> stack = [root];
 
       for (RegexToken t in tokens) {
@@ -17,7 +16,7 @@ class RegexParser {
             stack.last.elements.add(new CharacterPattern.fromBytes([t.value]));
             break;
           case RegexToken.lparan:
-            RegexNode l = new GroupPattern();
+            RegexNode l = new GroupPattern(isSaveInMemory:true);
             stack.last.elements.add(l);
             stack.add(l);
             break;

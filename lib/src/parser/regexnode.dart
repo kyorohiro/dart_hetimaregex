@@ -50,10 +50,10 @@ class StarPattern extends RegexNode {
 }
 
 class GroupPattern extends RegexNode {
-  bool dontMemory = false;
+  bool _isSaveInMemory = false;
 
-  GroupPattern({isRoot: false, List<RegexLeaf> elements: null}) {
-    this.dontMemory = isRoot;
+  GroupPattern({isSaveInMemory: true, List<RegexLeaf> elements: null}) {
+    this._isSaveInMemory = isSaveInMemory;
     if (elements != null) {
       this.elements.addAll(elements);
     }
@@ -70,13 +70,13 @@ class GroupPattern extends RegexNode {
       }
       commandPerOrgroup.add(t);
     }
-    if (!dontMemory) {
+    if (_isSaveInMemory) {
       ret.add(new MemoryStartCommand());
     }
 
     ret.addAll(_combineRegexCommand(commandPerOrgroup));
 
-    if (!dontMemory) {
+    if (_isSaveInMemory) {
       ret.add(new MemoryStopCommand());
     }
     return ret;
