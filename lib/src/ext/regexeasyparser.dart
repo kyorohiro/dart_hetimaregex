@@ -5,6 +5,7 @@ class RegexEasyParser extends heti.EasyParser {
 
   async.Future<List<List<int>>> readFromCommand(List<RegexCommand> command) {
     RegexVM vm = new RegexVM.createFromCommand([]);
-    return vm.lookingAt(this);
+    return vm.lookingAtFromEasyParser(this);
   }
 }
+

@@ -1,8 +1,22 @@
 part of hetimaregex;
 
-abstract class RegexNode {
-  List<Object> elements = [];
+abstract class RegexLeaf {
   List<RegexCommand> convertRegexCommands();
+}
+
+class RegexNode extends RegexLeaf{
+  List<Object> elements = [];
+  List<RegexCommand> convertRegexCommands(){
+    List<RegexCommand> ret = [];
+    for(Object o in elements) {
+      if(o is RegexNode) {
+        ret.addAll((o as RegexNode).convertRegexCommands());
+      } else if(o is RegexCommand){
+        ret.add(o as RegexCommand);
+      }
+    }
+    return ret;
+  }
 }
 
 class CharacterPattern extends RegexNode {
@@ -34,7 +48,7 @@ class StarPattern extends RegexNode {
 }
 
 class GroupPattern extends RegexNode {
-  List<GroupPattern> elementsPerOrgroup = [];
+  List<RegexNode> elementsPerOrgroup = [];
   bool dontMemory = false;
 
   GroupPattern({isRoot: false, List<Object> elements: null}) {
@@ -50,17 +64,15 @@ class GroupPattern extends RegexNode {
     List<RegexCommand> ret = [];
     List<List<RegexCommand>> commandPerOrgroup = [];
 
-    for (GroupPattern p in elementsPerOrgroup) {
+    if (elements.length > 0) {
+      RegexNode g = new RegexNode();
+      g.elements.addAll(elements);
+      this.elementsPerOrgroup.add(g);
+      elements.clear();
+    }
+    for (RegexNode p in elementsPerOrgroup) {
       commandPerOrgroup.add(p.convertRegexCommands());
     }
-    {
-      List<RegexCommand> t = [];
-      for (RegexNode n in elements) {
-        t.addAll(n.convertRegexCommands());
-      }
-      commandPerOrgroup.add(t);
-    }
-
     if (!dontMemory) {
       ret.add(new MemoryStartCommand());
     }
@@ -105,5 +117,3 @@ class GroupPattern extends RegexNode {
     return ret;
   }
 }
-
-
