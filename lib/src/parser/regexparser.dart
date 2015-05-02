@@ -13,21 +13,21 @@ class RegexParser {
       for (RegexToken t in tokens) {
         switch (t.kind) {
           case RegexToken.character:
-            stack.last.elements.add(new CharacterPattern.fromBytes([t.value]));
+            stack.last.addRegexNode(new CharacterPattern.fromBytes([t.value]));
             break;
           case RegexToken.lparan:
-            RegexNode l = new GroupPattern(isSaveInMemory:true);
-            stack.last.elements.add(l);
+            GroupPattern l = new GroupPattern(isSaveInMemory:true);
+            stack.last.addRegexNode(l);
             stack.add(l);
             break;
           case RegexToken.rparen:
             stack.removeLast();
             break;
           case RegexToken.star:
-            stack.last.elements.add(new StarPattern.fromPattern(stack.last.elements.removeLast()));
+            stack.last.addRegexNode(new StarPattern.fromPattern(stack.last.elements.removeLast()));
             break;
           case RegexToken.union:
-            stack.last.elementsList.add([]);
+            stack.last.groupingCurrentElement();
             break;
         }
       }

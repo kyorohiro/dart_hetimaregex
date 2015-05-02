@@ -4,6 +4,16 @@ abstract class RegexLeaf {
   List<RegexCommand> convertRegexCommands();
 }
 
+class RegexCommandLeaf extends RegexLeaf {
+  RegexCommand _command = null;
+  RegexCommandLeaf(RegexCommand c) {
+    _command = c;
+  }
+  List<RegexCommand> convertRegexCommands() {
+    return [_command];    
+  }
+}
+
 class RegexNode extends RegexLeaf{
   List<List<RegexLeaf>> elementsList = [[]];
   List<RegexLeaf> get elements => elementsList.last;
@@ -18,6 +28,14 @@ class RegexNode extends RegexLeaf{
       }
     }
     return ret;
+  }
+  
+  void addRegexNode(RegexNode node) {
+    elements.add(node);
+  }
+  
+  void addRegexCommand(RegexCommand c) {
+    elements.add(new RegexCommandLeaf(c));
   }
 }
 
@@ -57,6 +75,12 @@ class GroupPattern extends RegexNode {
     if (elements != null) {
       this.elements.addAll(elements);
     }
+  }
+
+  //
+  // 
+  void groupingCurrentElement() {
+    this.elementsList.add([]);
   }
 
   List<RegexCommand> convertRegexCommands() {
