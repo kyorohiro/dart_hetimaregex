@@ -5,7 +5,9 @@ abstract class RegexLeaf {
 }
 
 class RegexNode extends RegexLeaf{
-  List<Object> elements = [];
+  List<List<RegexLeaf>> elementsList = [[]];
+  List<RegexLeaf> get elements => elementsList.last;
+
   List<RegexCommand> convertRegexCommands(){
     List<RegexCommand> ret = [];
     for(Object o in elements) {
@@ -48,15 +50,12 @@ class StarPattern extends RegexNode {
 }
 
 class GroupPattern extends RegexNode {
-  List<RegexNode> elementsPerOrgroup = [];
   bool dontMemory = false;
 
-  GroupPattern({isRoot: false, List<Object> elements: null}) {
+  GroupPattern({isRoot: false, List<RegexLeaf> elements: null}) {
     this.dontMemory = isRoot;
-    if (elements == null) {
-      this.elements = [];
-    } else {
-      this.elements = new List.from(elements);
+    if (elements != null) {
+      this.elements.addAll(elements);
     }
   }
 
@@ -64,14 +63,12 @@ class GroupPattern extends RegexNode {
     List<RegexCommand> ret = [];
     List<List<RegexCommand>> commandPerOrgroup = [];
 
-    if (elements.length > 0) {
-      RegexNode g = new RegexNode();
-      g.elements.addAll(elements);
-      this.elementsPerOrgroup.add(g);
-      elements.clear();
-    }
-    for (RegexNode p in elementsPerOrgroup) {
-      commandPerOrgroup.add(p.convertRegexCommands());
+    for (List<RegexLeaf> p in elementsList) {
+      List<RegexCommand> t = [];
+      for(RegexLeaf l in p) {
+        t.addAll(l.convertRegexCommands());
+      }
+      commandPerOrgroup.add(t);
     }
     if (!dontMemory) {
       ret.add(new MemoryStartCommand());

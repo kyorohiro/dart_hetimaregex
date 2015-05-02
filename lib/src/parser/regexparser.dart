@@ -28,8 +28,7 @@ class RegexParser {
             stack.last.elements.add(new StarPattern.fromPattern(stack.last.elements.removeLast()));
             break;
           case RegexToken.union:
-            stack.last.elementsPerOrgroup.add(new GroupPattern(isRoot:true, elements:stack.last.elements));
-            elements:stack.last.elements.clear();
+            stack.last.elementsList.add([]);
             break;
         }
       }

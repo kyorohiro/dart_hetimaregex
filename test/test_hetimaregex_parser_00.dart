@@ -9,7 +9,7 @@ void main() => script00();
 
 void script00() {
   group('parser00', () {
-
+/*
     test('char true a', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("aa").then((regex.RegexVM vm) {
@@ -19,7 +19,7 @@ void script00() {
       }).catchError((e) {
         expect(true, false);
       });
-    });
+    });*/
     test('char true b', () {
       regex.RegexParser parser = new regex.RegexParser();
       parser.compile("(aa)").then((regex.RegexVM vm) {
