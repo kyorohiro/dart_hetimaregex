@@ -18,14 +18,39 @@ class AllCharCommand extends RegexCommand {
   }
 }
 
-a() {
-  GroupPattern root = new GroupPattern(isSaveInMemory:false);
-  CharacterPattern commentS = new CharacterPattern.fromBytes(conv.UTF8.encode("[["));
-  CharacterPattern commentE = new CharacterPattern.fromBytes(conv.UTF8.encode("]]"));
-  GroupPattern comment = new GroupPattern(isSaveInMemory:false);
+class RegexBuilder {
+  GroupPattern root = new GroupPattern(isSaveInMemory: false);
+  List<GroupPattern> stack = [];
+  RegexBuilder() {
+    stack.add(root);
+  }
   
-  root.addRegexNode(commentS);
-  root.addRegexNode(comment);
-  comment.addRegexNode(new StarPattern.fromCommand(new AllCharCommand()));
-  root.addRegexNode(commentE);
+
+  RegexBuilder addRegexLeaf(RegexLeaf leaf) {
+    stack.last.addRegexNode(leaf);
+    return this;
+  }
+  
+  RegexBuilder addRegexCommand(RegexCommand comm) {
+    stack.last.addRegexCommand(comm);
+    return this;
+  }
+  
+  RegexBuilder push(bool isSaveInMemory) {
+    GroupPattern p = new GroupPattern(isSaveInMemory: isSaveInMemory);
+    stack.last.addRegexNode(p);
+    stack.add(p);
+    return this;
+  }
+
+  RegexBuilder pop() {
+    stack.removeLast();
+    return this;
+  }
+  
+  List<RegexCommand> done() {
+    List<RegexCommand> ret = root.convertRegexCommands();
+    ret.add(new MatchCommand());
+    return ret;
+  }
 }
