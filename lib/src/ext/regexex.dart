@@ -29,18 +29,32 @@ class UncharacterCommand extends RegexCommand {
     int length = without.length;
     parser.push();
     parser.nextBuffer(length).then((List<int> v) {
+      parser.back();
       parser.pop();
+      if (v.length == 0) {
+        c.completeError(new Exception());
+        return;
+      }
       if (v.length == length) {
         for (int i = 0; i < length; i++) {
           if (v[i] != without[i]) {
             vm._currentTask._nextCommandLocation += 1;
             parser.resetIndex(parser.getInedx() + 1);
+            c.complete([v[0]]);
             return;
           }
         }
+        c.completeError(new Exception());
+      } else {
+        // todo
+        vm._currentTask._nextCommandLocation += 1;
+        parser.resetIndex(parser.getInedx() + 1);
+        c.complete([v[0]]);
+        return;
       }
-      c.completeError(new Exception());
-    }).catchError((e) {
+
+    }).catchError((e) {      
+      parser.pop();
       c.completeError(e);
     });
     return c.future;

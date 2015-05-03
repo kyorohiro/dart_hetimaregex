@@ -27,6 +27,24 @@ void script00() {
         expect(true, false);
       });
     });
+    
+    test('char true a', () {
+      regex.RegexBuilder builder = new regex.RegexBuilder();
+      builder
+      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("[[")))
+      .push(true)
+      .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.UncharacterCommand(conv.UTF8.encode("]]"))))
+      .pop()
+      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("]]")));
+      regex.RegexVM vm = new regex.RegexVM.createFromCommand(builder.done());
+
+      print(vm.toString());
+      return vm.lookingAt(conv.UTF8.encode("[[aabb]]")).then((List<List<int>> v) {
+        expect(conv.UTF8.decode(v[0]),"aabb");
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
   });
 }
 
