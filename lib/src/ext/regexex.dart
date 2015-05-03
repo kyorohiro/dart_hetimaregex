@@ -33,6 +33,7 @@ class UncharacterCommand extends RegexCommand {
       if (v.length == length) {
         for (int i = 0; i < length; i++) {
           if (v[i] != without[i]) {
+            vm._currentTask._nextCommandLocation += 1;
             parser.resetIndex(parser.getInedx() + 1);
             return;
           }
