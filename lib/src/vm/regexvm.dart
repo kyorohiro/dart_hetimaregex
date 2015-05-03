@@ -69,6 +69,8 @@ class RegexVM {
         return;
       }
       _currentTask.lookingAt(this).then((List<List<int>> v) {
+        parser.resetIndex(_currentTask._parseHelperWithTargetSource.getInedx());
+        _tasks.clear();
         completer.complete(v);
       }).catchError((e) {
         _eraseCurrentTask();
