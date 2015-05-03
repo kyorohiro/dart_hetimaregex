@@ -10,6 +10,6 @@ class AllCharCommand extends RegexCommand {
     }).catchError((e){
       c.completeError(e);
     });
-    return c;
+    return c.future;
   }
 }
