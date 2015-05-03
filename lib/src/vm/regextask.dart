@@ -16,7 +16,13 @@ class RegexTask {
       this._nextCommandLocation = tasl._nextCommandLocation;
     }
     this._parseHelperWithTargetSource = tasl._parseHelperWithTargetSource.toClone();
-    this._memory = new List.from(tasl._memory);
+    {
+      //deep copy
+      this._memory = [];
+      for(List<int> v in tasl._memory) {
+        this._memory.add(new List.from(v));
+      }
+    }
     this._currentMemoryTargetId = new List.from(tasl._currentMemoryTargetId);
     this._nextMemoryId = tasl._nextMemoryId;
   }

@@ -50,12 +50,15 @@ class CharacterPattern extends RegexNode {
 }
 
 class StarPattern extends RegexNode {
-  RegexNode e1 = null;
+  RegexLeaf e1 = null;
 
-  StarPattern.fromPattern(RegexNode e1) {
+  StarPattern.fromPattern(RegexLeaf e1) {
     this.e1 = e1;
   }
 
+  StarPattern.fromCommand(RegexCommand c) {
+    this.e1 = new RegexCommandLeaf(c);
+  }
   List<RegexCommand> convertRegexCommands() {
     List<RegexCommand> e1List = e1.convertRegexCommands();
 
