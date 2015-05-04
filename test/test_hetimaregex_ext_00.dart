@@ -45,38 +45,52 @@ void script00() {
         expect(true, false);
       });
     });
-    
-    test('char true a', () {
-      regex.RegexBuilder builder = new regex.RegexBuilder();
-      builder
-      .push(true)
-      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("+")))
-      .or()
-      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("-")))
-      .or()
-      .addRegexCommand(new regex.EmptyCommand())
-      .pop()
-      .push(true)
-      .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.MatchByteCommand([0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39])))
-      .or()
-      .addRegexCommand(new regex.EmptyCommand())
-      .pop()
-      .push(true)
-      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode(".")))
-      .or()
-      .addRegexCommand(new regex.EmptyCommand())
-      .pop()
-      .push(true)
-      .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.MatchByteCommand([0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39])))
-      .or()
-      .addRegexCommand(new regex.EmptyCommand())
-      .pop();
+    regex.RegexBuilder builder = new regex.RegexBuilder();
+    builder
+    .push(true)
+    .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("+")))
+    .or()
+    .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("-")))
+    .or()
+    .addRegexCommand(new regex.EmptyCommand())
+    .pop()
+    .push(true)
+    .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.MatchByteCommand([0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39])))
+    .or()
+    .addRegexCommand(new regex.EmptyCommand())
+    .pop()
+    .push(true)
+    .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode(".")))
+    .or()
+    .addRegexCommand(new regex.EmptyCommand())
+    .pop()
+    .push(true)
+    .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.MatchByteCommand([0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39])))
+    .or()
+    .addRegexCommand(new regex.EmptyCommand())
+    .pop();
+    test('+1000.11', () {
       regex.RegexVM vm = new regex.RegexVM.createFromCommand(builder.done());
 
       print(vm.toString());
       return vm.lookingAt(conv.UTF8.encode("+1000.11")).then((List<List<int>> v) {
         expect(conv.UTF8.decode(v[0]),"+");
         expect(conv.UTF8.decode(v[1]),"1000");
+        expect(conv.UTF8.decode(v[2]),".");
+        expect(conv.UTF8.decode(v[3]),"11");
+      }).catchError((e) {
+        expect(true, false);
+      });
+
+    });
+    test('.11', () {
+      regex.RegexVM vm = new regex.RegexVM.createFromCommand(builder.done());
+      print(vm.toString());
+      return vm.lookingAt(conv.UTF8.encode(".11")).then((List<List<int>> v) {
+        expect(conv.UTF8.decode(v[0]),"");
+        expect(conv.UTF8.decode(v[1]),"");
+        expect(conv.UTF8.decode(v[2]),".");
+        expect(conv.UTF8.decode(v[3]),"11");
       }).catchError((e) {
         expect(true, false);
       });
