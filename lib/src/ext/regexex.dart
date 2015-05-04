@@ -17,6 +17,44 @@ class AllCharCommand extends RegexCommand {
   }
 }
 
+class EmptyCommand extends RegexCommand {
+  @override
+  async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
+    async.Completer<List<int>> c = new async.Completer();
+    vm._currentTask._nextCommandLocation += 1;
+    c.complete([]);
+    return c.future;
+  }
+  String toString() {
+    return "<empty>";
+  }
+}
+
+class MatchByteCommand extends RegexCommand {
+  List<int> target = [];
+  MatchByteCommand(List<int> target) {
+    this.target.addAll(target);
+  }
+
+  @override
+  async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
+    async.Completer<List<int>> c = new async.Completer();
+    parser.readByte().then((int v) {
+      for(int d in target) {
+        if(d == v) {
+          vm._currentTask._nextCommandLocation += 1;
+          c.complete([v]);
+          return;
+        }
+      }
+      c.completeError(new Exception());      
+    }).catchError((e) {
+      c.completeError(e);
+    });
+    return c.future;
+  }
+}
+
 class UncharacterCommand extends RegexCommand {
   List<int> without = [];
   UncharacterCommand(List<int> without) {
@@ -78,6 +116,11 @@ class RegexBuilder {
 
   RegexBuilder addRegexCommand(RegexCommand comm) {
     stack.last.addRegexCommand(comm);
+    return this;
+  }
+
+  RegexBuilder or() {
+    stack.last.groupingCurrentElement();
     return this;
   }
 

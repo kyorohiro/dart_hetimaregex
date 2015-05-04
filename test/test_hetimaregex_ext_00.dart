@@ -45,6 +45,30 @@ void script00() {
         expect(true, false);
       });
     });
+    
+    test('char true a', () {
+      regex.RegexBuilder builder = new regex.RegexBuilder();
+      builder
+      .push(true)
+      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("+")))
+      .or()
+      .addRegexCommand(new regex.CharCommand.createFromList(conv.UTF8.encode("-")))
+      .or()
+      .addRegexCommand(new regex.EmptyCommand())
+      .pop()
+      .push(true)
+      .addRegexLeaf(new regex.StarPattern.fromCommand(new regex.MatchByteCommand([0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39])))
+      .pop();
+      regex.RegexVM vm = new regex.RegexVM.createFromCommand(builder.done());
+
+      print(vm.toString());
+      return vm.lookingAt(conv.UTF8.encode("+1000")).then((List<List<int>> v) {
+        expect(conv.UTF8.decode(v[0]),"+");
+        expect(conv.UTF8.decode(v[1]),"1000");
+      }).catchError((e) {
+        expect(true, false);
+      });
+    });
   });
 }
 
