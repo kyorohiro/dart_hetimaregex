@@ -55,6 +55,30 @@ class MatchByteCommand extends RegexCommand {
   }
 }
 
+class UnmatchByteCommand extends RegexCommand {
+  List<int> target = [];
+  UnmatchByteCommand(List<int> target) {
+    this.target.addAll(target);
+  }
+
+  @override
+  async.Future<List<int>> check(RegexVM vm, heti.EasyParser parser) {
+    async.Completer<List<int>> c = new async.Completer();
+    parser.readByte().then((int v) {
+      for(int d in target) {
+        if(d == v) {
+          c.completeError(new Exception()); 
+          return;
+        }
+      }
+      vm._currentTask._nextCommandLocation += 1;
+      c.complete([v]);     
+    }).catchError((e) {
+      c.completeError(e);
+    });
+    return c.future;
+  }
+}
 class UncharacterCommand extends RegexCommand {
   List<int> without = [];
   UncharacterCommand(List<int> without) {
