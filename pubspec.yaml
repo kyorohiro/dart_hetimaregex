@@ -3,6 +3,6 @@ version: 0.0.1
 description: A library useful for applications or for sharing on pub.dartlang.org.
 dependencies:
   hetimacore:
-    git: https://github.com/kyorohiro/dart_hetimafile.git
+    git: https://github.com/kyorohiro/dart_hetimacore.git
 dev_dependencies:
   unittest: '>=0.11.0 <0.12.0'
